@@ -23,6 +23,8 @@ export default {
     baseUrl: process.env.BASE_URL,
   },
 
+  target: 'static',
+
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [],
 
