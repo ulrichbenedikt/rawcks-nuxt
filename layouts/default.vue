@@ -96,13 +96,13 @@ export default {
       items: [
         {
           icon: 'mdi-apps',
-          title: 'Welcome',
+          title: 'RAWCKS',
           to: '/',
         },
         {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire',
+          icon: 'mdi-login',
+          title: 'Login/Register',
+          to: '/auth',
         },
       ],
       slides: [
