@@ -51,7 +51,9 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-btn :disabled="!valid" @click="login">Register</v-btn>
+          <v-btn :loading="loading" :disabled="!valid" @click="login"
+            >Register</v-btn
+          >
         </v-col>
       </v-row>
       <v-row v-if="showProfideEmail">
@@ -110,6 +112,7 @@ export default {
   },
   methods: {
     async login() {
+      this.loading = true
       const createdSlug =
         this.firstname.toLowerCase() + this.lastname.toLowerCase()
       const data = {
@@ -157,66 +160,64 @@ export default {
             newuser
               .updatePassword(this.password)
               .then(function () {
-                newuser
-                  .updateProfile({
-                    displayName: data.firstname + ' ' + data.lastname,
-                  })
-                  .then(function () {
-                    var n = 0
-                    firestore.collection('users').doc(createdSlug).get()
-                      ? firestore
-                          .collection('users')
-                          .where('slug', '==', createdSlug)
-                          .get()
-                          .then(function (querySnapshot) {
-                            querySnapshot.forEach(function (doc) {
-                              n++
-                              //slug = ud.slug + "-" + n;
-                              data.slug = createdSlug + '-' + n
-                              console.log(
-                                'last one is finally free: ',
-                                data.slug
-                              )
-                            })
-                            firestore
-                              .collection('users')
-                              .doc(data.slug)
-                              .set(data)
-                              .then(function () {
-                                window.location.href =
-                                  window.location.origin + '/user/' + data.slug
-                              })
-                              .catch(function (error) {
-                                return (this.msg =
-                                  'collection: ' +
-                                  error.code +
-                                  ': ' +
-                                  error.message)
-                              })
-                          })
-                          .catch(function (error) {
-                            console.log('Error getting documents: ', error)
-                          })
-                      : firestore
+                var n = 0
+                firestore.collection('users').doc(createdSlug).get()
+                  ? firestore
+                      .collection('users')
+                      .where('slug', '==', createdSlug)
+                      .get()
+                      .then(function (querySnapshot) {
+                        querySnapshot.forEach(function (doc) {
+                          n++
+                          //slug = ud.slug + "-" + n;
+                          data.slug = createdSlug + '-' + n
+                          console.log('last one is finally free: ', data.slug)
+                        })
+                        firestore
                           .collection('users')
                           .doc(data.slug)
                           .set(data)
                           .then(function () {
-                            console.log(
-                              '6b: ',
-                              data.firstname + ' ' + data.lastname
-                            )
-                            window.location.href =
-                              window.location.origin + '/user/' + data.slug
+                            newuser
+                              .updateProfile({
+                                displayName: data.slug,
+                              })
+                              .then(() => {
+                                window.location.href =
+                                  window.location.origin + '/user/' + data.slug
+                              })
                           })
                           .catch(function (error) {
                             return (this.msg =
-                              'collection error: ' + error.message)
+                              'collection: ' +
+                              error.code +
+                              ': ' +
+                              error.message)
                           })
-                  })
-                  .catch(function (error) {
-                    return (this.msg = 'update error: ' + error.message)
-                  })
+                      })
+                      .catch(function (error) {
+                        console.log('Error getting documents: ', error)
+                      })
+                  : firestore
+                      .collection('users')
+                      .doc(data.slug)
+                      .set(data)
+                      .then(function () {
+                        newuser
+                          .updateProfile({
+                            displayName: data.slug,
+                          })
+                          .then(() => {
+                            window.location.href =
+                              window.location.origin + '/user/' + data.slug
+                          })
+                      })
+                      .catch(function (error) {
+                        return (this.msg = 'collection error: ' + error.message)
+                      })
+              })
+              .catch(function (error) {
+                return (this.msg = 'update error: ' + error.message)
               })
               .catch(function (error) {
                 return (this.msg = 'signin error:' + error.message)
@@ -226,6 +227,7 @@ export default {
         .catch((error) => {
           return (this.msg = 'backup error: ' + error.message)
         })
+      this.loading = false
     },
   },
 }

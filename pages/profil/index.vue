@@ -61,16 +61,18 @@
         <v-card>
           <v-sparkline
             :value="value"
-            :smooth="radius || false"
-            :padding="padding"
-            :line-width="width"
-            :stroke-linecap="lineCap"
+            smooth="50"
+            padding="8"
             :fill="fill"
-            :type="type"
-            :auto-line-width="autoLineWidth"
+            color="secondary"
+            stroke-linecap="round"
+            label-size="4"
+            height="100%"
             auto-draw
           >
-            <template v-slot:label="item"> ${{ item.value }} </template>
+            <template v-slot:label="item" class="caption text-h6">
+              ${{ item.value }}
+            </template>
           </v-sparkline>
           <v-container class="pt-0">
             <v-divider></v-divider>
@@ -78,7 +80,9 @@
               <p class="caption">Jan. 2020</p>
               <p class="caption">Jan. 2021</p>
             </div>
-            <v-subheader class="px-2">Your earnings this year</v-subheader>
+            <v-subheader class="px-2 text--center"
+              >Your earnings this year</v-subheader
+            >
           </v-container>
         </v-card>
       </v-col>
@@ -88,15 +92,11 @@
 
 <script>
 export default {
-  data: () => ({
-    width: 1.3,
-    radius: 50,
-    padding: 8,
-    lineCap: 'round',
-    value: [0, 2, 5, 9, 5, 10, 3, 5, 0, 0, 1, 8, 2, 9, 0],
-    fill: false,
-    type: 'trend',
-    autoLineWidth: false,
-  }),
+  data() {
+    return {
+      fill: true,
+      value: [0, 2, 5, 9, 5, 10, 3, 5, 0, 0, 1, 8, 2, 9, 0],
+    }
+  },
 }
 </script>
