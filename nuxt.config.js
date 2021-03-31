@@ -53,7 +53,17 @@ export default {
           measurementId: process.env.NUXT_ENV_MEASUREMENT_ID,
         },
         services: {
-          auth: true, // Just as example. Can be any other service.
+          auth: {
+            persistence: 'local', // default
+            initialize: {
+              onAuthStateChangedMutation: 'ON_AUTH_STATE_CHANGED_MUTATION',
+              onAuthStateChangedAction: 'onAuthStateChangedAction',
+              subscribeManually: false,
+            },
+            ssr: true, // default
+            emulatorPort: undefined,
+            // emulatorHost: 'http://localhost',
+          },
           storage: true,
           firestore: {
             memoryOnly: false, // default

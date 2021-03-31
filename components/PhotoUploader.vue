@@ -1,5 +1,6 @@
 <template>
   <v-card class="pa-4">
+    {{ isPreloaded }}
     <v-file-input
       v-model="files"
       color="deep-purple accent-4"
@@ -14,27 +15,18 @@
       :show-size="1000"
       :change="show(files)"
       class="align start"
-      ><template v-slot:selection="{ index, text }" class="d-felx">
-        <v-card
-          width="150px"
-          height="140px"
-          color="align-start grey lighten-4 pa-2 ma-2 "
-        >
-          <v-img
-            contain
-            :lazy-src="thumbnails[index]"
-            height="80"
-            width="150"
-            :src="thumbnails[index]"
-            class="mb-1"
-          >
-          </v-img>
-          <p class="caption">{{ text }}</p>
+    >
+      <template v-slot:selection="{ index, text }" class="d-flex">
+        <v-card width="150px" color="align-start grey lighten-4 pa-2 ma-2 ">
+          <img width="100%" :src="thumbnails[index]" class="mb-1" />
+          <p class="caption">{{ text }}: {{ progress[index] }}</p>
         </v-card>
       </template>
     </v-file-input>
+
     <v-btn
       :disabled="isDisabled"
+      :loading="isLoading"
       color="success"
       fab
       small
@@ -50,6 +42,12 @@
 
 <script>
 export default {
+  props: {
+    changed: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       files: [],
@@ -59,45 +57,94 @@ export default {
       ],
       isDisabled: true,
       progress: [],
+      isLoading: false,
+      isPreloaded: false,
     }
   },
   methods: {
+    fileImg(file) {
+      /*var reader = new FileReader()
+      reader.onload = function () {
+        //var dataURL = reader.result
+        //var output = document.getElementById('output')
+        //output.src = dataURL
+      }
+      reader.readAsDataURL(file)
+      const url = reader.readAsDataURL(file)
+      console.log('reader: ', url)
+
+      /*console.log('fileImg: ', file)
+      var reader = new FileReader(file)
+      console.log('reader: ', reader)
+      var img = ''
+      reader.onloaded = (upload) => {
+        img = upload.target.result
+      }
+      console.log('img: ', img)*/
+      //return reader.readAsDataURL(file)
+    },
     show(files) {
+      this.isPreloaded = false
       this.files.length > 0
         ? (this.isDisabled = false)
         : (this.isDisabled = true)
-      const th = this.thumbnails
       files.forEach((file, i) => {
         var reader = new FileReader()
-        reader.onloadend = function (upload) {
-          th[i] = upload.target.result
+        reader.onload = (upload) => {
+          this.thumbnails[i] = reader.result //upload.target.result
+        }
+        reader.onloadend = (upload) => {
+          this.isPreloaded = true
         }
         reader.readAsDataURL(file)
       })
-      this.thumbnails = th
+      /*files.forEach((file, i) => {
+        var reader = new FileReader()
+        reader.onloadend = (upload) => {
+          this.thumbnails[i] = upload.target.result
+        }
+        reader.readAsDataURL(file)
+      })*/
     },
     uploadFile(files) {
-      const metadata = {
-        contentType: 'image/jpeg',
-        customMetadata: {
-          uid: 'random userID number', //user.uid,
-        },
-      }
-      const progr = this.progress
+      this.isLoading = true
+      this.progress
       files.forEach((f, i) => {
+        var timestamp = new Date().getTime()
+        const metadata = {
+          contentType: f.type,
+          customMetadata: {
+            uid: this.$store.state.user.uid, //'random userID number', //user.uid,
+            name:
+              this.$store.state.user.firstname +
+              this.$store.state.user.lastname,
+            slug: this.$store.state.user.slug,
+            likes: 0,
+            views: 0,
+            title: f.name,
+            createdAt: timestamp,
+          },
+        }
         var uploadTask = this.$fire.storage
           .ref()
-          .child('images/' + f.name)
+          .child(
+            'images/' +
+              this.$store.state.user.slug +
+              '-' +
+              f.name +
+              '-' +
+              timestamp
+          )
           .put(f, metadata)
 
         uploadTask.on(
           'state_changed',
-          function (snapshot) {
+          (snapshot) => {
             // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
             var progress =
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100
             console.log('Upload is ' + progress + '% done')
-            progr[i] = { loaded: progress }
+
             switch (snapshot.state) {
               case 'paused':
                 console.log('Upload is paused')
@@ -106,8 +153,9 @@ export default {
                 console.log('Upload is running')
                 break
             }
+            return (this.progress[i] = { loaded: progress })
           },
-          function (error) {
+          (error) => {
             // A full list of error codes is available at
             // https://firebase.google.com/docs/storage/web/handle-errors
             switch (error.code) {
@@ -124,27 +172,38 @@ export default {
                 break
             }
           },
-          function () {
-            // Upload completed successfully, now we can get the download URL
-            uploadTask.snapshot.ref
-              .getDownloadURL()
-              .then(function (downloadURL) {
-                console.log('File available at', downloadURL)
-                this.files = []
-              })
+          () => {
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+              this.$fire.firestore
+                .collection(
+                  'users/' + this.$store.state.user.slug + '/collection'
+                )
+                .add({
+                  url: downloadURL,
+                  uid: this.$store.state.user.uid, //'random userID number', //user.uid,
+                  name:
+                    this.$store.state.user.firstname +
+                    this.$store.state.user.lastname,
+                  slug: this.$store.state.user.slug,
+                  likes: 0,
+                  views: 0,
+                  title: f.name,
+                  createdAt: timestamp,
+                })
+              this.files = []
+              this.isLoading = false
+              this.$emit('update:changed', true)
+            })
           }
         )
       })
-      this.progress = progr
       console.log(this.progress)
     },
   },
   watch: {
-    /*isUploading: function (e) {
-        console.log("isUploading: ",e)
-
-      
-    },*/
+    thumbnails: function (e) {
+      console.log('new thumbnails? = ', this.thumbnails)
+    },
   },
 }
 </script>
