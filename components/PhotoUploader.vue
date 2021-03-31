@@ -19,7 +19,8 @@
       <template v-slot:selection="{ index, text }" class="d-flex">
         <v-card width="150px" color="align-start grey lighten-4 pa-2 ma-2 ">
           <img width="100%" :src="thumbnails[index]" class="mb-1" />
-          <p class="caption">{{ text }}: {{ progress[index] }}</p>
+          <p class="caption">{{ text }}</p>
+          <v-progress-linear :value="progress[index]"></v-progress-linear>
         </v-card>
       </template>
     </v-file-input>

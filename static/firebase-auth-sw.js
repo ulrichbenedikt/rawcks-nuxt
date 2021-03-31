@@ -1,4 +1,4 @@
-const ignorePaths = ["\u002F__webpack_hmr","\u002F_loading","\u002F_nuxt\u002F"]
+const ignorePaths = ["\u002F__webpack_hmr","\u002F_loading","\u002F_nuxt\u002F","\u002Fprofil"]
 
 importScripts(
   'https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js'

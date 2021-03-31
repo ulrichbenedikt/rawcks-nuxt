@@ -14,7 +14,7 @@
           >
 
           <v-card-actions>
-            <v-btn color="primary" text> Continue </v-btn>
+            <v-btn color="primary" to="/profil/photos" text> Continue </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>

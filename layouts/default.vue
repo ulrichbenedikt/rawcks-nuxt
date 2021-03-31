@@ -77,6 +77,49 @@
               </v-list-item-content>
             </v-list-item>
           </v-list>
+          <v-list v-if="user">
+            <v-list-item
+              v-for="(item, i) in loggedinItems"
+              :key="i"
+              :to="item.to"
+              router
+              exact
+            >
+              <v-list-item-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title v-text="item.title" />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-action>
+                <v-icon>mdi-logout</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title @click="logUserOut"
+                  >Logout</v-list-item-title
+                >
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+          <v-list v-else>
+            <v-list-item
+              v-show="!user"
+              v-for="(item, i) in logggedoutItems"
+              :key="i"
+              :to="item.to"
+              router
+              exact
+            >
+              <v-list-item-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title v-text="item.title" />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
         </v-navigation-drawer>
         <v-footer :absolute="!fixed" app>
           <span>&copy; {{ new Date().getFullYear() }}</span>
@@ -95,10 +138,24 @@ export default {
       fixed: false,
       items: [
         {
-          icon: 'mdi-apps',
+          icon: 'mdi-home',
           title: 'RAWCKS',
           to: '/',
         },
+      ],
+      loggedinItems: [
+        {
+          icon: 'mdi-account',
+          title: 'Profil',
+          to: '/profil',
+        },
+        {
+          icon: 'mdi-logout',
+          title: 'Logout',
+          to: '/',
+        },
+      ],
+      logggedoutItems: [
         {
           icon: 'mdi-login',
           title: 'Login/Register',
@@ -123,7 +180,13 @@ export default {
         },
       ],
       title: 'RAWCKS',
+      user: this.$store.state.user,
     }
+  },
+  methods: {
+    logUserOut() {
+      this.$fire.auth.signOut()
+    },
   },
 }
 </script>

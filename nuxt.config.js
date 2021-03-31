@@ -25,6 +25,10 @@ export default {
 
   target: 'static',
 
+  router: {
+    middleware: 'index',
+  },
+
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [],
 
@@ -60,7 +64,7 @@ export default {
               onAuthStateChangedAction: 'onAuthStateChangedAction',
               subscribeManually: false,
             },
-            ssr: true, // default
+            ssr: { ignorePaths: ['/profil'] }, // default
             emulatorPort: undefined,
             // emulatorHost: 'http://localhost',
           },
