@@ -3,7 +3,7 @@ export default function ({ store, redirect, route }) {
   if (route.path === '/auth' && store.state.user) {
     redirect('/')
   }
-  if (route.path === '/profil' && store.state.user === null) {
+  if (route.path.includes('/profil') && store.state.user === null) {
     redirect('/auth')
   }
 }
