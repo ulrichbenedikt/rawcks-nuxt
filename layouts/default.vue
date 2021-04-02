@@ -92,7 +92,7 @@
                 <v-list-item-title v-text="item.title" />
               </v-list-item-content>
             </v-list-item>
-            <v-list-item>
+            <v-list-item to="" router exact>
               <v-list-item-action>
                 <v-icon>mdi-logout</v-icon>
               </v-list-item-action>
@@ -105,7 +105,6 @@
           </v-list>
           <v-list v-else>
             <v-list-item
-              v-show="!user"
               v-for="(item, i) in logggedoutItems"
               :key="i"
               :to="item.to"
@@ -149,11 +148,6 @@ export default {
           title: 'Profil',
           to: '/profil',
         },
-        {
-          icon: 'mdi-logout',
-          title: 'Logout',
-          to: '/',
-        },
       ],
       logggedoutItems: [
         {
@@ -180,12 +174,13 @@ export default {
         },
       ],
       title: 'RAWCKS',
-      user: this.$store.state.user,
+      user: this.$store.state.user ? true : false,
     }
   },
   methods: {
     logUserOut() {
       this.$fire.auth.signOut()
+      window.location.href = '/'
     },
   },
 }

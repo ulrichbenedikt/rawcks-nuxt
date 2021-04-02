@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <PhotoUploader :changed.sync="changed" />
-    <v-divider class="mt-4"></v-divider>
+    <v-divider class="mt-8"></v-divider>
     <GridPhotos v-show="!changed" :collection="collection" class="mt-4" />
   </v-container>
 </template>
@@ -16,6 +16,58 @@ export default {
     }
   },
   mounted() {
+    this.$fire.storage
+      .ref()
+      .child('/profiles/benediktulrich')
+      .listAll()
+      .then((res) => {
+        res.items.forEach((snap) => {
+          var url = ''
+          snap.getDownloadURL().then((urls) => {
+            url = urls
+          })
+          snap.getMetadata().then((metadata) => {
+            this.collection.push({
+              title: metadata.name,
+              views: 0,
+              likes: 0,
+              createdAt: metadata.timeCreated,
+              url: url,
+            })
+          })
+        })
+        res.prefixes.forEach((folderRef) => {
+          folderRef.listAll().then((snapshot) => {
+            snapshot.items.forEach((snap) => {
+              var url = ''
+              snap.getDownloadURL().then((urls) => {
+                url = urls
+              })
+              snap.getMetadata().then((metadata) => {
+                this.collection.push(metadata.name)
+                //const { title, views, likes, createdAt } = metadata.customMetadata
+                this.collection.push({
+                  title: metadata.name,
+                  views: 0,
+                  likes: 0,
+                  createdAt: metadata.timeCreated,
+                  url: url,
+                })
+                /*const { title, views, likes, createdAt } = metadata.customMetadata
+            this.collection.push({
+              title: title,
+              views: views,
+              likes: likes,
+              createdAt: createdAt,
+              url: url,
+            })*/
+              })
+            })
+          })
+        })
+      })
+  },
+  /*mounted() {
     this.$fire.firestore
       .collection(
         'users/' + this.$fire.auth.currentUser.displayName + '/collection'
@@ -51,6 +103,6 @@ export default {
         : null
       this.changed = false
     },
-  },
+  },*/
 }
 </script>

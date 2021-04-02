@@ -28,10 +28,8 @@
               min-width="1px"
             ></v-sheet></v-card-text></v-card></v-col
     ></v-row>
-    <p v-else class="mt-8 caption text-center">
-      no existing uploads
-    </p></v-container
-  >
+    <p v-else class="mt-8 caption text-center">no existing uploads</p>
+  </v-container>
 </template>
 
 <script>

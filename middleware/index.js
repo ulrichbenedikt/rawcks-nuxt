@@ -1,5 +1,5 @@
-export default function ({ store, redirect, route }) {
-  console.log('route: ', route.path, ' | ', store.state.user)
+export default function ({ store, redirect, route, app }) {
+  console.log(app.$fire.auth.currentUser)
   if (route.path === '/auth' && store.state.user) {
     redirect('/')
   }

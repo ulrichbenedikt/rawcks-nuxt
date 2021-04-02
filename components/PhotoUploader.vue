@@ -1,6 +1,5 @@
 <template>
   <v-card class="pa-4">
-    {{ isPreloaded }}
     <v-file-input
       v-model="files"
       color="deep-purple accent-4"

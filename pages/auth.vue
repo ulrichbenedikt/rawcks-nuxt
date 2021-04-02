@@ -106,8 +106,8 @@ export default {
       window.$nuxt.$fire.auth
         .signInWithEmailAndPassword(this.email, this.password)
         .then(() => {
+          window.location.href = '/profil'
           this.loading = false
-          this.$router.push('/')
         })
     },
 

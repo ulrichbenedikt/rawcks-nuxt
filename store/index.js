@@ -29,7 +29,7 @@ export const mutations = {
 }
 
 export const actions = {
-  nuxtServerInit({ dispatch, commit }, { res }) {
+  nuxtServerInit({ commit }, { res }) {
     if (res && res.locals && res.locals.user) {
       const { allClaims: claims, idToken: token, ...authUser } = res.locals.user
 
