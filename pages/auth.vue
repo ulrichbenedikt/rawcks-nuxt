@@ -35,6 +35,9 @@
           </div>
         </v-col>
       </v-row>
+      <v-row v-if="errorMsg">
+        <v-alert type="warning">{{ errorMsg }}</v-alert>
+      </v-row>
 
       <v-row v-if="askSignUp">
         <v-alert type="warning">
@@ -84,11 +87,12 @@ export default {
     showConfirmation: false,
     showContinue: true,
     loading: false,
+    errorMsg: '',
   }),
   methods: {
     signup() {
       this.loading = true
-      window.$nuxt.$fire.auth
+      this.$fire.auth
         .sendSignInLinkToEmail(this.email, {
           url: window.location.origin + '/finishsignup',
           handleCodeInApp: true,
@@ -100,13 +104,21 @@ export default {
           this.showContinue = false
           window.localStorage.setItem('emailForSignIn', this.email)
         })
+        .catch((err) => {
+          this.errorMsg = err.message
+          this.loading = false
+        })
     },
     signin() {
       this.loading = true
-      window.$nuxt.$fire.auth
+      this.$fire.auth
         .signInWithEmailAndPassword(this.email, this.password)
         .then(() => {
           window.location.href = '/profil'
+          this.loading = false
+        })
+        .catch((err) => {
+          this.errorMsg = err.message
           this.loading = false
         })
     },
@@ -114,16 +126,21 @@ export default {
     async handleEmail() {
       if (!this.valid) return
       if (!this.requestPassword) {
-        const loginMethods = await window.$nuxt.$fire.auth.fetchSignInMethodsForEmail(
-          this.email
-        )
+        const loginMethods = await this.$fire.auth
+          .fetchSignInMethodsForEmail(this.email)
+          .catch((err) => {
+            this.errorMsg = err.message
+            this.loading = false
+          })
         if (loginMethods.length <= 1) {
           this.askSignUp = true
         } else {
           this.requestPassword = true
         }
       } else {
-        this.signin()
+        this.signin().catch((err) => {
+          this.errorMsg = err.message
+        })
       }
     },
   },

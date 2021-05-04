@@ -77,7 +77,7 @@
               </v-list-item-content>
             </v-list-item>
           </v-list>
-          <v-list v-show="user">
+          <v-list v-if="isAuth">
             <v-list-item
               v-for="(item, i) in loggedinItems"
               :key="i"
@@ -103,7 +103,7 @@
               </v-list-item-content>
             </v-list-item>
           </v-list>
-          <v-list v-show="!user">
+          <v-list v-else>
             <v-list-item
               v-for="(item, i) in logggedoutItems"
               :key="i"
@@ -174,8 +174,13 @@ export default {
         },
       ],
       title: 'RAWCKS',
-      user: this.$store.state.user ? true : false,
+      user: this.$store.state.modules.user,
     }
+  },
+  computed: {
+    isAuth: (that) => {
+      return that.$store.getters['modules/user/isAuthenticated']
+    },
   },
   methods: {
     logUserOut() {

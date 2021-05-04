@@ -120,7 +120,9 @@ export default {
         lastname: this.lastname,
         slug: createdSlug,
         email: this.email,
-        membership: this.select,
+        membership: this.$fire.firestore
+          .collection('memberships')
+          .doc(this.select.toLowerCase()), //this.select,
         createdAt: Date.now(),
         followers: 0,
         views: 0,

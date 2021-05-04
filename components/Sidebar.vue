@@ -16,7 +16,9 @@
               {{ user.firstname }}<br />{{ user.lastname }}
             </h1>
           </div>
-          <p class="caption">{{ user.membership }}</p></v-col
+          <p class="caption">
+            {{ $store.state.modules.user.membership }}
+          </p></v-col
         ></v-row
       ></v-card-title
     ><v-divider></v-divider
@@ -113,7 +115,7 @@ export default {
   },
   async mounted() {
     this.slug = this.$route.params.slug
-    await this.$nuxt.$fire.firestore
+    await this.$fire.firestore
       .collection('users')
       .doc(this.slug)
       .get()

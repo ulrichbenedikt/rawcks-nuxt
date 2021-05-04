@@ -60,8 +60,9 @@ export default {
           auth: {
             persistence: 'local', // default
             initialize: {
-              onAuthStateChangedMutation: 'ON_AUTH_STATE_CHANGED_MUTATION',
-              onAuthStateChangedAction: 'onAuthStateChangedAction',
+              onAuthStateChangedMutation:
+                'modules/user/ON_AUTH_STATE_CHANGED_MUTATION',
+              onAuthStateChangedAction: 'modules/user/onAuthStateChangedAction',
               subscribeManually: false,
             },
             ssr: { ignorePaths: ['/profil'] }, // default
