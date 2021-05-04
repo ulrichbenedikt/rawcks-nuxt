@@ -1,10 +1,22 @@
 <template>
   <v-container>
     <v-row v-if="collection">
-      <v-col v-for="(col, i) in collection" :key="i" cols="12" md="3">
-        <v-card elevation="0" tile>
+      <v-col
+        v-for="(col, i) in collection"
+        :key="i"
+        cols="12"
+        :md="col.group ? 6 : 3"
+      >
+        <v-card
+          elevation="0"
+          tile
+          :class="col.group ? 'd-flex flex-column align-end' : null"
+        >
           <img :src="col.url" width="100%" />
-          <v-card-subtitle class="pa-0 pt-1 mb-2">
+          <v-card-subtitle
+            class="pa-0 pt-1 mb-2"
+            :style="col.group ? style : null"
+          >
             <v-row>
               <v-col
                 cols="6"
@@ -20,6 +32,7 @@
           <v-card-text
             style="background-color: lightgray; width: 100%"
             class="pa-0"
+            :style="col.group ? style : null"
           >
             <v-sheet
               color="grey"
@@ -43,6 +56,7 @@ export default {
   data() {
     return {
       h: '100%',
+      style: 'width:50%; background-color: white; float:right;',
     }
   },
 }

@@ -77,7 +77,7 @@
               </v-list-item-content>
             </v-list-item>
           </v-list>
-          <v-list v-if="user">
+          <v-list v-show="user">
             <v-list-item
               v-for="(item, i) in loggedinItems"
               :key="i"
@@ -103,7 +103,7 @@
               </v-list-item-content>
             </v-list-item>
           </v-list>
-          <v-list v-else>
+          <v-list v-show="!user">
             <v-list-item
               v-for="(item, i) in logggedoutItems"
               :key="i"

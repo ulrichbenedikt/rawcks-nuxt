@@ -1,10 +1,10 @@
 export const state = () => ({
-  user: 0,
+  user: null,
   membership: null,
 })
 
 export const mutations = {
-  ON_AUTH_STATE_CHANGED_MUTATION(state, { authUser, claims }) {
+  async ON_AUTH_STATE_CHANGED_MUTATION(state, { authUser, claims }) {
     if (authUser) {
       console.log('mutation user')
       const { uid, email, emailVerified, displayName } = authUser

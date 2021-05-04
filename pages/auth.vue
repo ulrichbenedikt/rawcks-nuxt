@@ -1,6 +1,6 @@
 <template>
-  <v-form v-model="valid">
-    <v-container>
+  <v-container>
+    <v-form v-model="valid">
       <h1 class="text-h1">Welcome to Rawcks</h1>
       <h2 class="text-h2">Signin / Signup</h2>
       <v-row>
@@ -55,8 +55,8 @@
           the instructions in the email.</v-alert
         ></v-row
       >
-    </v-container>
-  </v-form>
+    </v-form>
+  </v-container>
 </template>
 
 <script>

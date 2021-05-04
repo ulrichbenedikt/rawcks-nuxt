@@ -1,72 +1,6 @@
 <template>
-  <v-stepper v-model="stepper" vertical>
-    <v-stepper-step :complete="stepper > 1" step="1" editable>
-      Choose a grouping type
-      <small>This will or won't group your photos</small>
-    </v-stepper-step>
-
-    <v-stepper-content step="1">
-      <v-item-group mandatory>
-        <v-container>
-          <v-row>
-            <v-col cols="12" md="4" v-for="(n, i) in options" :key="i">
-              <v-item v-slot="{ active, toggle }">
-                <v-card
-                  :color="active ? 'primary' : ''"
-                  class="align-center"
-                  @click="activeOpt(n.title, toggle)"
-                  tile
-                  elevation="0"
-                >
-                  <v-card-title class="display-1 flex-grow-1 text-center">{{
-                    n.title
-                  }}</v-card-title
-                  ><v-card-subtitle>{{ n.description }}</v-card-subtitle>
-                </v-card>
-              </v-item>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-item-group>
-      <v-btn
-        color="primary"
-        @click="selectedOpt != 'Single' ? (stepper = 2) : (stepper = 3)"
-      >
-        Continue
-      </v-btn>
-    </v-stepper-content>
-
-    <v-stepper-step :complete="stepper > 2" step="2" editable>
-      Add a name
-      <small
-        >Only obligatory if <i>{{ options[1].title }}</i> or
-        <i>{{ options[2].title }}</i> is selected</small
-      >
-    </v-stepper-step>
-
-    <v-stepper-content step="2">
-      <v-text-field
-        v-show="selectedOpt != 'Single'"
-        :label="selectedOpt + ' name'"
-        hide-details="auto"
-        :rules="colNameRules"
-        v-model="folderName"
-      ></v-text-field>
-      <v-btn
-        color="primary"
-        :disabled="nextButtonDisabler()"
-        @click="stepper = 3"
-      >
-        Continue
-      </v-btn>
-    </v-stepper-content>
-
-    <v-stepper-step :complete="stepper > 3" step="3">
-      Upload photos
-      <small>Select multiple photos</small>
-    </v-stepper-step>
-
-    <v-stepper-content step="3">
+  <v-card class="pa-4">
+    <v-form v-model="valid">
       <v-file-input
         v-model="files"
         color="deep-purple accent-4"
@@ -90,11 +24,52 @@
           </v-card>
         </template>
       </v-file-input>
-      <v-btn color="success" :disabled="isDisabled" @click="uploadFile(files)">
-        Upload
+      <v-subheader>Choose a grouping type:</v-subheader>
+      <v-item-group mandatory>
+        <v-container>
+          <v-row>
+            <v-col cols="12" md="4" v-for="(n, i) in options" :key="i">
+              <v-item v-slot="{ active, toggle }">
+                <v-card
+                  :color="active ? 'primary' : ''"
+                  class="align-center"
+                  @click="activeOpt(n.title, toggle)"
+                  tile
+                  elevation="0"
+                >
+                  <v-card-title class="display-1 flex-grow-1 text-center">{{
+                    n.title
+                  }}</v-card-title
+                  ><v-card-subtitle>{{ n.description }}</v-card-subtitle>
+                </v-card>
+              </v-item>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-item-group>
+      <v-text-field
+        v-show="selectedOpt != 'Single'"
+        :label="selectedOpt + ' name'"
+        hide-details="auto"
+        :rules="colNameRules"
+        v-model="folderName"
+      ></v-text-field>
+
+      <v-btn
+        :disabled="!valid"
+        :loading="isLoading"
+        color="success"
+        fab
+        small
+        absolute
+        bottom
+        right
+        @click="uploadFile(files)"
+      >
+        <v-icon>mdi-upload</v-icon>
       </v-btn>
-    </v-stepper-content>
-  </v-stepper>
+    </v-form>
+  </v-card>
 </template>
 
 <script>
@@ -107,8 +82,8 @@ export default {
   },
   data() {
     return {
+      valid: false,
       files: [],
-      folderName: '',
       thumbnails: [],
       rules: [
         (value) => !!value || 'Required.',
@@ -117,45 +92,30 @@ export default {
       colNameRules: [
         (value) => !!value || 'Required.',
         (value) => (value && value.length >= 3) || 'Min 3 characters',
-        (value) => !/^$|\s+/.test(value) || 'No empty space allowed',
       ],
       isDisabled: true,
       progress: [],
       isLoading: false,
       isPreloaded: false,
-      stepper: 1,
       options: [
         {
           title: 'Single',
           description: 'A random list of photos',
-          icon: '',
         },
         {
           title: 'Roll',
           description: 'A group of photos belonging together',
-          icon: '',
         },
         {
           title: 'Collection',
           description: 'A group of photos belonging to a common topic',
-          icon: '',
         },
       ],
       selectedOpt: 'Single',
-      valid: false,
-      nameNextButton: true,
+      folderName: '',
     }
   },
   methods: {
-    nextButtonDisabler() {
-      this.selectedOpt === 'Single' ||
-      (this.folderName &&
-        this.folderName.length >= 3 &&
-        !/^$|\s+/.test(this.folderName))
-        ? (this.nameNextButton = false)
-        : (this.nameNextButton = true)
-      return this.nameNextButton
-    },
     activeOpt(title, toggleFunc) {
       this.selectedOpt = title
       toggleFunc()
@@ -186,6 +146,9 @@ export default {
       this.files.length > 0
         ? (this.isDisabled = false)
         : (this.isDisabled = true)
+      this.folderName == '' && this.selectedOpt != 'Single'
+        ? (this.isDisabled = false)
+        : (this.isDisabled = true)
       files.forEach((file, i) => {
         var reader = new FileReader()
         reader.onload = (upload) => {
@@ -205,6 +168,7 @@ export default {
       })*/
     },
     uploadFile(files) {
+      if (!this.valid) return
       this.isLoading = true
       this.progress
       files.forEach((f, i) => {
@@ -225,8 +189,6 @@ export default {
         }
         var imgName =
           this.$store.state.user.slug + '-' + f.name + '-' + timestamp
-        console.log('slug: ', this.$store.state.user.slug)
-        console.log('folderName: ', this.folderName)
         var imgPath =
           this.selectedOpt != 'Single'
             ? this.folderName + '/' + imgName
@@ -272,7 +234,7 @@ export default {
             }
           },
           () => {
-            /*uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
               this.$fire.firestore
                 .collection(
                   'users/' + this.$store.state.user.slug + '/collection'
@@ -292,10 +254,7 @@ export default {
               this.files = []
               this.isLoading = false
               this.$emit('update:changed', true)
-            })*/
-            this.files = []
-            this.isLoading = false
-            this.$emit('update:changed', true)
+            })
           }
         )
       })
