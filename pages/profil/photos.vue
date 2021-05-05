@@ -39,6 +39,7 @@ export default {
                 likes: 0,
                 createdAt: metadata.timeCreated,
                 url: url,
+                fullPath: metadata.fullPath,
                 slug: metadata.customMetadata.slug + '/' + metadata.name,
                 group: false,
               })
@@ -57,7 +58,7 @@ export default {
                   likes: 0,
                   createdAt: metadata.timeCreated,
                   url: url,
-
+                  fullPath: metadata.fullPath,
                   slug: metadata.customMetadata.slug + '/' + metadata.name,
                   group: true,
                 })
