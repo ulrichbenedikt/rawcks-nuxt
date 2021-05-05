@@ -33,7 +33,6 @@ const actions = {
           const userData = user.data()
           if (userData) {
             commit('setUser', userData)
-            console.log('userData: ', userData)
             userData.membership.get().then((doc) => {
               commit('setMembership', doc.data())
             })

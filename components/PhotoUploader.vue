@@ -209,23 +209,21 @@ export default {
       this.progress
       files.forEach((f, i) => {
         var timestamp = new Date().getTime()
+        var user = this.$store.state.modules.user
         const metadata = {
           contentType: f.type,
           customMetadata: {
-            uid: this.$store.state.user.uid, //'random userID number', //user.uid,
-            name:
-              this.$store.state.user.firstname +
-              this.$store.state.user.lastname,
-            slug: this.$store.state.user.slug,
+            uid: user.uid, //'random userID number', //user.uid,
+            name: user.firstname + user.lastname,
+            slug: user.slug,
             likes: 0,
             views: 0,
             title: f.name,
             createdAt: timestamp,
           },
         }
-        var imgName =
-          this.$store.state.user.slug + '-' + f.name + '-' + timestamp
-        console.log('slug: ', this.$store.state.user.slug)
+        var imgName = user.slug + '-' + f.name + '-' + timestamp
+        console.log('slug: ', user.slug)
         console.log('folderName: ', this.folderName)
         var imgPath =
           this.selectedOpt != 'Single'
@@ -233,7 +231,7 @@ export default {
             : imgName
         var uploadTask = this.$fire.storage
           .ref()
-          .child('profiles/' + this.$store.state.user.slug + '/' + imgPath)
+          .child('profiles/' + user.slug + '/' + imgPath)
           .put(f, metadata)
 
         uploadTask.on(

@@ -17,7 +17,7 @@
             </h1>
           </div>
           <p class="caption">
-            {{ $store.state.modules.user.membership }}
+            {{ user.membership }}
           </p></v-col
         ></v-row
       ></v-card-title
@@ -114,14 +114,26 @@ export default {
     }
   },
   async mounted() {
-    this.slug = this.$route.params.slug
+    this.slug = this.$route.params.user
     await this.$fire.firestore
       .collection('users')
       .doc(this.slug)
       .get()
       .then((user) => {
-        console.log(user.data())
-        this.user = user.data()
+        console.log('user.data: ', user.data())
+        var getData = {}
+        for (const entry of Object.entries(user.data())) {
+          if (entry[1].firestore === undefined) {
+            console.log(this.user, entry[0] + ':', entry[1])
+            getData[entry[0]] = entry[1]
+          }
+
+          // filter out firestore objects (like membership)
+          /*if (entry[1].firestore === undefined) {
+            this.user[entry[0]] = entry[1]
+          }*/
+        }
+        this.user = getData
       })
   },
 }
