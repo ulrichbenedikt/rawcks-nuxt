@@ -1,10 +1,12 @@
 <template>
-  <v-container v-if="user && startImg">
+  <v-container v-if="profil">
     <img :src="startImg.url" width="100%" />
-    likes: {{ startImg.likes ? startImg.likes.length : null }}
-    <v-btn icon :color="active ? 'primary' : 'grey'" @click="heart"
-      ><v-icon>mdi-heart</v-icon></v-btn
-    >
+    <div v-if="startImg.url">
+      likes: {{ startImg.likes ? startImg.likes.length : null }}
+      <v-btn icon :color="startImg.likes ? 'primary' : 'grey'" @click="heart"
+        ><v-icon>mdi-heart</v-icon></v-btn
+      >
+    </div>
     <GridPhotos :collection="collection" class="mt-4" />
   </v-container>
 </template>
@@ -14,7 +16,8 @@ export default {
   layout: 'sidebarProfiles',
   data() {
     return {
-      user: null,
+      user: this.$store.state.modules.user,
+      profil: null,
       collection: [],
       startImg: {},
       active: false,
@@ -23,15 +26,38 @@ export default {
   mounted() {
     this.routeUser = this.$route.params.user
     this.routePhoto = this.$route.params.photo
+    // load all images of user
     this.$fire.firestore
       .collection('users')
       .doc(this.routeUser)
       .get()
       .then((u) => {
-        this.user = u.data()
+        this.profil = u.data()
+        // load single image if existing
+        this.$fire.firestore
+          .collection('images')
+          .where('fullPath', '==', this.routeUser + '/' + this.routePhoto)
+          .get()
+          .then((singleImg) => {
+            singleImg.docs.forEach((img) => {
+              this.startImg = img.data()
+            })
+          })
+        // load all images of user
+        this.$fire.firestore.collection('images').onSnapshot((snap) => {
+          this.collection = []
+          snap.forEach((img) => {
+            img
+              .data()
+              .createdBy.get()
+              .then((c) => {
+                if (c.id === u.id) this.collection.push(img.data())
+              })
+          })
+        })
       })
 
-    this.$fire.storage
+    /*this.$fire.storage
       .ref()
       .child('/profiles/' + this.routeUser)
       .listAll()
@@ -40,7 +66,7 @@ export default {
         const getSingle = res.items.filter(
           (photo) =>
             photo.fullPath ==
-            'profiles/' + this.routeUser + '/' + this.routePhoto
+            'users/' + this.routeUser + '/' + this.routePhoto
         )
         if (getSingle[0]) {
           var singleUrl = ''
@@ -101,44 +127,15 @@ export default {
             })
           })
         })
-      })
+      })*/
   },
   methods: {
     heart(path, uid) {
+      if (!this.user.isAuth) window.location.href = '/auth'
       this.active = !this.active
       // Create file metadata to update
-      var newMetadata = {
-        likes: [uid],
-      }
-      // Create a reference to the file whose metadata we want to change
-      this.$fire.storage
-        .ref()
-        .child(path)
-        .updateMetadata(newMetadata)
-        .then((metadata) => {
-          // Updated metadata for 'images/forest.jpg' is returned in the Promise
-        })
-        .catch((error) => {
-          // Uh-oh, an error occurred!
-        })
-
-      /*this.$fire.storage
-        .ref()
-        .child('/profiles/' + this.routeUser)
-        .listAll()
-        .then((res) => {
-          // if existing get the startImg url for the big starting img
-          const getSingle = res.items.filter(
-            (photo) =>
-              photo.fullPath ==
-              'profiles/' + this.routeUser + '/' + this.routePhoto
-          )
-          if (getSingle[0]) {
-            getSingle[0].getDownloadURL().then((urls) => {
-              this.startImg = urls
-            })
-          }
-        })*/
+      console.log(this.$store.state.modules.user)
+      console.log(this.startImg.likes)
     },
   },
 }

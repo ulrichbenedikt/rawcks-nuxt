@@ -186,7 +186,7 @@ export default {
                               })
                               .then(() => {
                                 window.location.href =
-                                  window.location.origin + '/user/' + data.slug
+                                  window.location.origin + '/profil'
                               })
                           })
                           .catch(function (error) {
@@ -211,7 +211,7 @@ export default {
                           })
                           .then(() => {
                             window.location.href =
-                              window.location.origin + '/user/' + data.slug
+                              window.location.origin + '/profil'
                           })
                       })
                       .catch(function (error) {

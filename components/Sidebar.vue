@@ -120,11 +120,9 @@ export default {
       .doc(this.slug)
       .get()
       .then((user) => {
-        console.log('user.data: ', user.data())
         var getData = {}
         for (const entry of Object.entries(user.data())) {
           if (entry[1].firestore === undefined) {
-            console.log(this.user, entry[0] + ':', entry[1])
             getData[entry[0]] = entry[1]
           }
 

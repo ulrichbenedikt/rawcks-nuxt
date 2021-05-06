@@ -33,7 +33,19 @@
             @click.stop="drawer = !drawer"
           ></v-app-bar-nav-icon>
 
-          <v-app-bar-title>{{ title }}</v-app-bar-title>
+          <v-app-bar-title
+            ><v-btn
+              to="/"
+              nuxt
+              exact
+              class="ma-0 pa-0 text-h4"
+              width="auto"
+              height="100%"
+              :ripple="false"
+              plain
+              >{{ title }}</v-btn
+            ></v-app-bar-title
+          >
 
           <v-spacer></v-spacer>
 
@@ -59,67 +71,10 @@
             </v-container>
           </v-main>
         </v-sheet>
-
         <v-navigation-drawer v-model="drawer" fixed temporary app>
-          <v-list>
-            <v-list-item
-              v-for="(item, i) in items"
-              :key="i"
-              :to="item.to"
-              router
-              exact
-            >
-              <v-list-item-action>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title v-text="item.title" />
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-          <v-list v-if="isAuth">
-            <v-list-item
-              v-for="(item, i) in loggedinItems"
-              :key="i"
-              :to="item.to"
-              router
-              exact
-            >
-              <v-list-item-action>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title v-text="item.title" />
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item to="" router exact>
-              <v-list-item-action>
-                <v-icon>mdi-logout</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title @click="logUserOut"
-                  >Logout</v-list-item-title
-                >
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-          <v-list v-else>
-            <v-list-item
-              v-for="(item, i) in logggedoutItems"
-              :key="i"
-              :to="item.to"
-              router
-              exact
-            >
-              <v-list-item-action>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title v-text="item.title" />
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
+          <NavList />
         </v-navigation-drawer>
+
         <v-footer :absolute="!fixed" app>
           <span>&copy; {{ new Date().getFullYear() }}</span>
         </v-footer>
@@ -135,27 +90,6 @@ export default {
       drawer: false,
       showSlideshow: false,
       fixed: false,
-      items: [
-        {
-          icon: 'mdi-home',
-          title: 'RAWCKS',
-          to: '/',
-        },
-      ],
-      loggedinItems: [
-        {
-          icon: 'mdi-account',
-          title: 'Profil',
-          to: '/profil',
-        },
-      ],
-      logggedoutItems: [
-        {
-          icon: 'mdi-login',
-          title: 'Login/Register',
-          to: '/auth',
-        },
-      ],
       slides: [
         {
           title: 'You Are',
@@ -176,17 +110,6 @@ export default {
       title: 'RAWCKS',
       user: this.$store.state.modules.user,
     }
-  },
-  computed: {
-    isAuth: (that) => {
-      return that.$store.getters['modules/user/isAuthenticated']
-    },
-  },
-  methods: {
-    logUserOut() {
-      this.$fire.auth.signOut()
-      window.location.href = '/'
-    },
   },
 }
 </script>

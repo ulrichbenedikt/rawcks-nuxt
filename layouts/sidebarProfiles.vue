@@ -33,7 +33,19 @@
             @click.stop="drawer = !drawer"
           ></v-app-bar-nav-icon>
 
-          <v-app-bar-title>{{ title }}</v-app-bar-title>
+          <v-app-bar-title
+            ><v-btn
+              to="/"
+              nuxt
+              exact
+              class="ma-0 pa-0 text-h4"
+              width="auto"
+              height="100%"
+              :ripple="false"
+              plain
+              >{{ title }}</v-btn
+            ></v-app-bar-title
+          >
 
           <v-spacer></v-spacer>
 
@@ -66,25 +78,10 @@
             </v-container>
           </v-main>
         </v-sheet>
-
         <v-navigation-drawer v-model="drawer" fixed temporary app>
-          <v-list>
-            <v-list-item
-              v-for="(item, i) in items"
-              :key="i"
-              :to="item.to"
-              router
-              exact
-            >
-              <v-list-item-action>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title v-text="item.title" />
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
+          <NavList />
         </v-navigation-drawer>
+
         <v-footer :absolute="!fixed" app>
           <span>&copy; {{ new Date().getFullYear() }}</span>
         </v-footer>

@@ -208,32 +208,10 @@ export default {
       this.isLoading = true
       this.progress
       files.forEach((f, i) => {
-        var timestamp = new Date().getTime()
         var user = this.$store.state.modules.user
-        const metadata = {
-          contentType: f.type,
-          customMetadata: {
-            uid: user.uid, //'random userID number', //user.uid,
-            name: user.firstname + user.lastname,
-            slug: user.slug,
-            likes: 0,
-            views: 0,
-            title: f.name,
-            createdAt: timestamp,
-          },
-        }
-        var imgName = user.slug + '-' + f.name + '-' + timestamp
-        console.log('slug: ', user.slug)
-        console.log('folderName: ', this.folderName)
-        var imgPath =
-          this.selectedOpt != 'Single'
-            ? this.folderName + '/' + imgName
-            : imgName
-        var uploadTask = this.$fire.storage
-          .ref()
-          .child('profiles/' + user.slug + '/' + imgPath)
-          .put(f, metadata)
-
+        var timestamp = new Date()
+        var imgTitle = f.name
+        var uploadTask = this.$fire.storage.ref().child('images').put(f)
         uploadTask.on(
           'state_changed',
           (snapshot) => {
@@ -270,34 +248,36 @@ export default {
             }
           },
           () => {
-            /*uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+              // Settings
+              var isSingle = this.selectedOpt === 'Single' ? true : false
+              var path = isSingle
+                ? user.slug + '/' + imgTitle
+                : user.slug + '/' + this.folderName + '/' + imgTitle
+              // create db
               this.$fire.firestore
-                .collection(
-                  'users/' + this.$store.state.user.slug + '/collection'
-                )
-                .add({
-                  url: downloadURL,
-                  uid: this.$store.state.user.uid, //'random userID number', //user.uid,
-                  name:
-                    this.$store.state.user.firstname +
-                    this.$store.state.user.lastname,
-                  slug: this.$store.state.user.slug,
-                  likes: 0,
-                  views: 0,
-                  title: f.name,
+                .collection('images')
+                .doc(user.uid + timestamp.getTime())
+                .set({
                   createdAt: timestamp,
+                  updatedAt: timestamp,
+                  createdBy: this.$fire.firestore
+                    .collection('users')
+                    .doc(user.slug),
+                  fullPath: path,
+                  url: downloadURL,
+                  title: imgTitle,
+                  likes: [],
+                  views: [],
+                  group: isSingle,
                 })
-              this.files = []
-              this.isLoading = false
-              this.$emit('update:changed', true)
-            })*/
+            })
             this.files = []
             this.isLoading = false
             this.$emit('update:changed', true)
           }
         )
       })
-      console.log(this.progress)
     },
   },
   watch: {

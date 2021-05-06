@@ -21,7 +21,7 @@ const actions = {
       // claims = null
       // Perform logout operations
       console.log('logg out', authUser)
-      commit('setUser', {})
+      //commit('setUser', {})
     } else {
       // Do something with the authUser and the claims object...
       console.log('logg in', authUser)
@@ -64,7 +64,7 @@ const mutations = {
     }
   },
   setMembership(state, membership) {
-    state.membership = membership
+    state.membership = membership.title
   },
 }
 

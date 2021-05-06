@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <h1 class="text-h3">Welcome To RAWCKS</h1>
-    <GridPhotos :collection="collection" />
+    <GridPhotos :collection="images" />
   </v-container>
 </template>
 
@@ -10,10 +10,17 @@ export default {
   data() {
     return {
       collection: [],
+      images: [],
     }
   },
   mounted() {
-    this.$fire.storage
+    this.$fire.firestore.collection('images').onSnapshot((snap) => {
+      this.images = []
+      snap.forEach((doc) => {
+        this.images.push(doc.data())
+      })
+    })
+    /*this.$fire.storage
       .ref()
       .child('/profiles')
       .listAll()
@@ -64,7 +71,7 @@ export default {
             })
           })
         })
-      })
+      })*/
   },
 }
 </script>
