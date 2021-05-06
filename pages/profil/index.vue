@@ -19,7 +19,7 @@
         </v-card>
       </v-col>
       <v-col cols="4">
-        <v-card class="mx-auto" max-width="344">
+        <v-card class="mx-auto" max-width="344" disabled>
           <v-img
             src="/norbert-kundrak-LJcB7n2F3UQ-unsplash.jpg"
             height="150px"
@@ -50,7 +50,7 @@
           </v-card-subtitle>
 
           <v-card-actions>
-            <v-btn color="primary" text> Continue </v-btn>
+            <v-btn color="primary" text to="/"> Continue </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>

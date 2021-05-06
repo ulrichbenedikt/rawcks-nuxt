@@ -1,7 +1,7 @@
 <template>
   <v-container v-if="user">
-    <h1>Hello {{ user.firstname }}</h1>
     <img :src="startImg" width="100%" />
+    <v-btn icon><v-icon>mdi-heart</v-icon></v-btn>
     <GridPhotos :collection="collection" class="mt-4" />
   </v-container>
 </template>
